@@ -7,6 +7,7 @@ import { CircleMember } from './entities/circle-member.entity';
 import { Cycle } from './entities/cycle.entity';
 import { PayoutSchedule } from './entities/payout-schedule.entity';
 import { ExitRequest } from './entities/exit-request.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ExitRequest } from './entities/exit-request.entity';
       Cycle,
       PayoutSchedule,
       ExitRequest,
+      User,
     ]),
   ],
   controllers: [CirclesController],

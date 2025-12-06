@@ -96,11 +96,27 @@ This project is built using a modular microservices architecture to ensure scala
    DATABASE_NAME=hive_fund
    JWT_SECRET=super_secret_hackathon_key
    ```
-4. **Start the Database**
+4. **Setup Database**
 
+   **Option A: Using Docker (Recommended)**
    ```bash
    docker-compose up -d
    ```
+
+   **Option B: Manual PostgreSQL Setup**
+   ```bash
+   # Connect to PostgreSQL as superuser
+   psql -U postgres
+   
+   # Run the database creation script
+   \i database/create-database.sql
+   
+   # Or from command line:
+   psql -U postgres -f database/create-database.sql
+   ```
+
+   > **Note:** TypeORM will automatically create all tables when the app starts (synchronize: true in development mode)
+
 5. **Run the Application**
 
    ```bash
@@ -136,21 +152,3 @@ Once the application is running, full API documentation (Swagger) is available a
 This interactive documentation allows you to test all endpoints (Auth, Circles, Loans) directly from the browser.
 
 ---
-
-## ⚖️ Regulatory Compliance Note
-
-* **Banking Act:** HiveFund operates on a non-custodial basis. Funds move Peer-to-Peer; we do not hold deposits.
-* **Microfinance Act:** Lending is structured under **Tier 2 (Credit-Only)** regulations, partnering with institutional capital.
-* **Data Privacy:** All credit scoring is performed with explicit user consent upon registration.
-
----
-
-## 👥 The Team
-
-* **Takudzwanashe Samuel** - *Lead Backend Engineer*
-* *[Team Member 2]* - *Frontend Engineer*
-* *[Team Member 3]* - *Product & Pitch*
-
----
-
-**Built with 🧡 in Zimbabwe.**
