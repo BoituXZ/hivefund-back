@@ -8,33 +8,15 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { LearningContent } from './learning-content.entity';
 
-export enum LoanStatus {
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  PAID = 'PAID',
-}
-
-@Entity('loans')
-export class Loan {
+@Entity('user_progress')
+export class UserProgress {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  amount: number;
-
-  @Column('decimal', { precision: 10, scale: 2 })
-  balance: number;
-
-  @Column({
-    type: 'enum',
-    enum: LoanStatus,
-    default: LoanStatus.PENDING,
-  })
-  status: LoanStatus;
-
-  @Column({ type: 'timestamptz' })
-  dueDate: Date;
+  @Column({ type: 'timestamptz', nullable: true })
+  completedAt: Date;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -43,9 +25,17 @@ export class Loan {
   @Column()
   userId: string;
 
+  @ManyToOne(() => LearningContent, (learningContent) => learningContent.userProgress)
+  @JoinColumn({ name: 'learningContentId' })
+  learningContent: LearningContent;
+
+  @Column()
+  learningContentId: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
+

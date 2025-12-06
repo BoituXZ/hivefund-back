@@ -5,26 +5,20 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Product } from './product.entity';
-import { Order } from './order.entity';
 
-@Entity('storefronts')
-export class Storefront {
+@Entity('credit_scores')
+export class CreditScore {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column('int', { default: 0 })
+  score: number;
+
   @Column()
-  name: string;
-
-  @Column({ unique: true })
-  slug: string;
-
-  @Column({ nullable: true })
-  description: string;
+  tier: string;
 
   @OneToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -33,15 +27,10 @@ export class Storefront {
   @Column({ unique: true })
   userId: string;
 
-  @OneToMany(() => Product, (product) => product.storefront)
-  products: Product[];
-
-  @OneToMany(() => Order, (order) => order.storefront)
-  orders: Order[];
-
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
+

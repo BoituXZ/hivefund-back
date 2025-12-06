@@ -7,34 +7,33 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Cycle } from './cycle.entity';
 import { User } from '../../users/entities/user.entity';
 
-export enum LoanStatus {
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  PAID = 'PAID',
-}
-
-@Entity('loans')
-export class Loan {
+@Entity('payout_schedules')
+export class PayoutSchedule {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ type: 'timestamptz' })
+  scheduledDate: Date;
 
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  balance: number;
-
   @Column({
     type: 'enum',
-    enum: LoanStatus,
-    default: LoanStatus.PENDING,
+    enum: ['PENDING', 'PAID', 'CANCELLED'],
+    default: 'PENDING',
   })
-  status: LoanStatus;
+  status: string;
 
-  @Column({ type: 'timestamptz' })
-  dueDate: Date;
+  @ManyToOne(() => Cycle, (cycle) => cycle.payoutSchedules)
+  @JoinColumn({ name: 'cycleId' })
+  cycle: Cycle;
+
+  @Column()
+  cycleId: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -49,3 +48,4 @@ export class Loan {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
+

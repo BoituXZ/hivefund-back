@@ -8,40 +8,43 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Gig } from './gig.entity';
 
-export enum LoanStatus {
+export enum BookingStatus {
   PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  PAID = 'PAID',
+  CONFIRMED = 'CONFIRMED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
 }
 
-@Entity('loans')
-export class Loan {
+@Entity('bookings')
+export class Booking {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  amount: number;
-
-  @Column('decimal', { precision: 10, scale: 2 })
-  balance: number;
-
   @Column({
     type: 'enum',
-    enum: LoanStatus,
-    default: LoanStatus.PENDING,
+    enum: BookingStatus,
+    default: BookingStatus.PENDING,
   })
-  status: LoanStatus;
+  status: BookingStatus;
 
   @Column({ type: 'timestamptz' })
-  dueDate: Date;
+  date: Date;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @ManyToOne(() => Gig, (gig) => gig.bookings)
+  @JoinColumn({ name: 'gigId' })
+  gig: Gig;
 
   @Column()
-  userId: string;
+  gigId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'customerId' })
+  customer: User;
+
+  @Column()
+  customerId: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
@@ -49,3 +52,4 @@ export class Loan {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
+

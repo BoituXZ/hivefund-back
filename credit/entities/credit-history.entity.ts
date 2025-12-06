@@ -9,32 +9,19 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
-export enum LoanStatus {
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  PAID = 'PAID',
-}
-
-@Entity('loans')
-export class Loan {
+@Entity('credit_history')
+export class CreditHistory {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  amount: number;
+  @Column('int')
+  scoreBefore: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  balance: number;
+  @Column('int')
+  scoreAfter: number;
 
-  @Column({
-    type: 'enum',
-    enum: LoanStatus,
-    default: LoanStatus.PENDING,
-  })
-  status: LoanStatus;
-
-  @Column({ type: 'timestamptz' })
-  dueDate: Date;
+  @Column()
+  reason: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -49,3 +36,4 @@ export class Loan {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
+

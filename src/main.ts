@@ -10,11 +10,13 @@ async function bootstrap() {
   app.enableCors();
 
   // 2. Enable Validation (Protect your data integrity)
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, // Strips out properties that aren't in your DTOs
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Strips out properties that aren't in your DTOs
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // 3. Setup Swagger Documentation (The "Invisible" Bonus)
   const config = new DocumentBuilder()
@@ -23,10 +25,20 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Auth')
     .addTag('Circles')
+    .addTag('Payments')
+    .addTag('Credit')
+    .addTag('Loans')
+    .addTag('Storefront')
+    .addTag('Marketplace')
+    .addTag('Learning')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
+  console.log(`🚀 Application is running on: http://localhost:${process.env.PORT ?? 3000}`);
+  console.log(`📚 Swagger documentation: http://localhost:${process.env.PORT ?? 3000}/api/docs`);
 }
 bootstrap();
+

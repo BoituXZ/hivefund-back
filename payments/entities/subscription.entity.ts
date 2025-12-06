@@ -8,33 +8,28 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Circle } from '../../circles/entities/circle.entity';
 
-export enum LoanStatus {
-  PENDING = 'PENDING',
+export enum SubscriptionStatus {
   ACTIVE = 'ACTIVE',
-  PAID = 'PAID',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
 }
 
-@Entity('loans')
-export class Loan {
+@Entity('subscriptions')
+export class Subscription {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  amount: number;
-
-  @Column('decimal', { precision: 10, scale: 2 })
-  balance: number;
-
   @Column({
     type: 'enum',
-    enum: LoanStatus,
-    default: LoanStatus.PENDING,
+    enum: SubscriptionStatus,
+    default: SubscriptionStatus.ACTIVE,
   })
-  status: LoanStatus;
+  status: SubscriptionStatus;
 
-  @Column({ type: 'timestamptz' })
-  dueDate: Date;
+  @Column({ type: 'timestamptz', nullable: true })
+  cancelledAt: Date;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -43,9 +38,17 @@ export class Loan {
   @Column()
   userId: string;
 
+  @ManyToOne(() => Circle)
+  @JoinColumn({ name: 'circleId' })
+  circle: Circle;
+
+  @Column()
+  circleId: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
+

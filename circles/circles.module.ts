@@ -1,9 +1,25 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { CirclesService } from './circles.service';
 import { CirclesController } from './circles.controller';
+import { Circle } from './entities/circle.entity';
+import { CircleMember } from './entities/circle-member.entity';
+import { Cycle } from './entities/cycle.entity';
+import { PayoutSchedule } from './entities/payout-schedule.entity';
+import { ExitRequest } from './entities/exit-request.entity';
 
 @Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      Circle,
+      CircleMember,
+      Cycle,
+      PayoutSchedule,
+      ExitRequest,
+    ]),
+  ],
   controllers: [CirclesController],
   providers: [CirclesService],
+  exports: [CirclesService],
 })
 export class CirclesModule {}
