@@ -22,7 +22,7 @@ import { ExitRequest, ExitRequestStatus } from "./entities/exit-request.entity";
 import { ExitRequestVote } from "./entities/exit-request-vote.entity";
 import { User } from "../users/entities/user.entity";
 import * as crypto from "crypto";
-import { PaymentsService } from '../payments/payments.service';
+import { PaymentsService } from "../payments/payments.service";
 
 @Injectable()
 export class CirclesService {
@@ -40,9 +40,9 @@ export class CirclesService {
         @InjectRepository(ExitRequestVote)
         private exitRequestVoteRepository: Repository<ExitRequestVote>,
         @InjectRepository(User)
-        private userRepository: Repository<User>
-      private paymentsService: PaymentsService,
-  ) {}
+        private userRepository: Repository<User>,
+        private paymentsService: PaymentsService
+    ) {}
 
     async create(createCircleDto: CreateCircleDto, user: any) {
         // Generate random 6-character invite code
@@ -65,11 +65,11 @@ export class CirclesService {
 
         await this.circleMemberRepository.save(creatorMember);
 
-    // Create subscription for the creator
-    const creatorUser = await this.userRepository.findOne({
-      where: { id: user.userId },
-    });
-    await this.paymentsService.createSubscription(creatorUser, savedCircle);
+        // Create subscription for the creator
+        const creatorUser = await this.userRepository.findOne({
+            where: { id: user.userId },
+        });
+        await this.paymentsService.createSubscription(creatorUser, savedCircle);
 
         // Return circle with members
         return this.circleRepository.findOne({
@@ -129,11 +129,11 @@ export class CirclesService {
 
         await this.circleMemberRepository.save(newMember);
 
-    // Create subscription for the new member
-    const newMemberUser = await this.userRepository.findOne({
-      where: { id: user.userId },
-    });
-    await this.paymentsService.createSubscription(newMemberUser, circle);
+        // Create subscription for the new member
+        const newMemberUser = await this.userRepository.findOne({
+            where: { id: user.userId },
+        });
+        await this.paymentsService.createSubscription(newMemberUser, circle);
 
         // Return updated circle with all members
         return this.circleRepository.findOne({
@@ -260,8 +260,8 @@ export class CirclesService {
             cycleNumber: 1, // For now, always 1. Can be incremented for subsequent cycles
             startDate: startDate,
             endDate: endDate,
-          status: CycleStatus.ACTIVE,
-    });
+            status: CycleStatus.ACTIVE,
+        });
 
         const savedCycle = await this.cycleRepository.save(cycle);
 

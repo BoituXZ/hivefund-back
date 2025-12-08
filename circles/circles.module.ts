@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CirclesService } from "./circles.service";
 import { CirclesController } from "./circles.controller";
@@ -9,6 +9,7 @@ import { PayoutSchedule } from "./entities/payout-schedule.entity";
 import { ExitRequest } from "./entities/exit-request.entity";
 import { ExitRequestVote } from "./entities/exit-request-vote.entity";
 import { User } from "../users/entities/user.entity";
+import { PaymentsModule } from "../payments/payments.module";
 
 @Module({
     imports: [
@@ -18,8 +19,10 @@ import { User } from "../users/entities/user.entity";
             Cycle,
             PayoutSchedule,
             ExitRequest,
+            ExitRequestVote,
             User,
         ]),
+        forwardRef(() => PaymentsModule),
     ],
     controllers: [CirclesController],
     providers: [CirclesService],
