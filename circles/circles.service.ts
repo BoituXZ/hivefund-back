@@ -11,9 +11,10 @@ import { CreateCircleDto } from './dto/create-circle.dto';
 import { JoinCircleDto } from './dto/join-circle.dto';
 import { Circle, CircleStatus } from './entities/circle.entity';
 import { CircleMember } from './entities/circle-member.entity';
-import { Cycle } from './entities/cycle.entity';
+import { Cycle, CycleStatus } from './entities/cycle.entity';
 import { PayoutSchedule } from './entities/payout-schedule.entity';
 import { User } from '../users/entities/user.entity';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class CirclesService {
@@ -28,6 +29,7 @@ export class CirclesService {
     private payoutScheduleRepository: Repository<PayoutSchedule>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private paymentsService: PaymentsService,
   ) {}
 
   async create(createCircleDto: CreateCircleDto, user: any) {
@@ -50,6 +52,12 @@ export class CirclesService {
     });
 
     await this.circleMemberRepository.save(creatorMember);
+
+    // Create subscription for the creator
+    const creatorUser = await this.userRepository.findOne({
+      where: { id: user.userId },
+    });
+    await this.paymentsService.createSubscription(creatorUser, savedCircle);
 
     // Return circle with members
     return this.circleRepository.findOne({
@@ -102,6 +110,12 @@ export class CirclesService {
     });
 
     await this.circleMemberRepository.save(newMember);
+
+    // Create subscription for the new member
+    const newMemberUser = await this.userRepository.findOne({
+      where: { id: user.userId },
+    });
+    await this.paymentsService.createSubscription(newMemberUser, circle);
 
     // Return updated circle with all members
     return this.circleRepository.findOne({
@@ -226,6 +240,7 @@ export class CirclesService {
       cycleNumber: 1, // For now, always 1. Can be incremented for subsequent cycles
       startDate: startDate,
       endDate: endDate,
+      status: CycleStatus.ACTIVE,
     });
 
     const savedCycle = await this.cycleRepository.save(cycle);
