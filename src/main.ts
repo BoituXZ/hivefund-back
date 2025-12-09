@@ -4,14 +4,13 @@ import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
+    console.log("👉 STEP 1: Starting NestFactory...");
     const app = await NestFactory.create(AppModule);
 
-    // 1. Enable CORS
-    app.enableCors({
-        origin: true,
-    });
+    // Enable CORS
+    app.enableCors({ origin: true });
 
-    // 2. Enable Validation
+    // Validation
     app.useGlobalPipes(
         new ValidationPipe({
             whitelist: true,
@@ -20,35 +19,28 @@ async function bootstrap() {
         })
     );
 
-    // 3. Setup Swagger
+    // Swagger
     const config = new DocumentBuilder()
         .setTitle("HiveFund API")
-        .setDescription(
-            "The backend API for the HiveFund Financial Inclusion Platform"
-        )
         .setVersion("1.0")
-        .addTag("Auth")
-        .addTag("Circles")
-        .addTag("Payments")
-        .addTag("Credit")
-        .addTag("Loans")
-        .addTag("Storefront")
-        .addTag("Marketplace")
-        .addTag("Learning")
-        .addBearerAuth()
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup("api/docs", app, document);
 
-    // --- CRITICAL FIX BELOW ---
-    // Cloud Run injects the PORT variable. We fallback to 3000 for local dev.
-    const port = process.env.POTO || 3000;
+    // THE PORT SETUP
+    // Cloud Run injects the PORT variable automatically.
+    const port = process.env.PORT || 3000;
 
-    // We MUST pass '0.0.0.0' as the second argument.
-    // This allows the app to accept connections from outside the docker container.
+    console.log(`👉 STEP 2: Attempting to listen on port ${port}...`);
+
+    // We MUST use '0.0.0.0' for Cloud Run
     await app.listen(port, "0.0.0.0");
 
-    console.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
-    console.log(`📚 Swagger documentation: http://0.0.0.0:${port}/api/docs`);
+    console.log(`🚀 SUCCESS: Application is running on: ${await app.getUrl()}`);
 }
-bootstrap();
+
+// Wrap in a try-catch to see startup errors
+bootstrap().catch((err) => {
+    console.error("❌ FATAL ERROR during startup:", err);
+    process.exit(1);
+});
