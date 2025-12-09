@@ -6,21 +6,21 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    // 1. Enable CORS (Critical for connecting to your Angular PWA later)
+    // 1. Enable CORS
     app.enableCors({
         origin: true,
     });
 
-    // 2. Enable Validation (Protect your data integrity)
+    // 2. Enable Validation
     app.useGlobalPipes(
         new ValidationPipe({
-            whitelist: true, // Strips out properties that aren't in your DTOs
+            whitelist: true,
             forbidNonWhitelisted: true,
             transform: true,
         })
     );
 
-    // 3. Setup Swagger Documentation (The "Invisible" Bonus)
+    // 3. Setup Swagger
     const config = new DocumentBuilder()
         .setTitle("HiveFund API")
         .setDescription(
@@ -40,12 +40,15 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup("api/docs", app, document);
 
-    await app.listen(process.env.PORT ?? 3000);
-    console.log(
-        `🚀 Application is running on: http://localhost:${process.env.POT0 ?? 3000}`
-    );
-    console.log(
-        `📚 Swagger documentation: http://localhost:${process.env.POT0 ?? 3000}/api/docs`
-    );
+    // --- CRITICAL FIX BELOW ---
+    // Cloud Run injects the PORT variable. We fallback to 3000 for local dev.
+    const port = process.env.POTO || 3000;
+
+    // We MUST pass '0.0.0.0' as the second argument.
+    // This allows the app to accept connections from outside the docker container.
+    await app.listen(port, "0.0.0.0");
+
+    console.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
+    console.log(`📚 Swagger documentation: http://0.0.0.0:${port}/api/docs`);
 }
 bootstrap();
