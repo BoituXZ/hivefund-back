@@ -8,7 +8,7 @@ async function bootstrap() {
 
     // 1. Enable CORS (Critical for connecting to your Angular PWA later)
     app.enableCors({
-        origin: "http://localhost:4200",
+        origin: true,
     });
 
     // 2. Enable Validation (Protect your data integrity)
