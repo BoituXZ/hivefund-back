@@ -29,8 +29,8 @@ COPY --from=builder /app/package*.json ./
 RUN npm ci --only=production
 
 # Cloud Run injects the PORT environment variable
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=3000
+EXPOSE 3000
 
 # Start the app
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
